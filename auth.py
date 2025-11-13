@@ -61,7 +61,7 @@ def validate_username(username):
     return True, ""
 
 def validate_password(password):
-    if 6 < len(password) < 50:
+    if not 6 < len(password) < 50:
         return False, "Password must contain between 6 and 50 characters"
 
     if not re.search(r"[A-Z]", password):

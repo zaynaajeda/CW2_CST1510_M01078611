@@ -1,0 +1,1 @@
+alice,b'$2b$12$X6YZ6iXmea6iBX1PVJLx8umn4bDOlqWWAwuxkYN9mQvr.SE250UEC'
