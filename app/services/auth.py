@@ -2,15 +2,20 @@ import bcrypt
 import os
 import re
 import time
+import secrets
 
 #File to store username and hashed password
 USER_DATA_FILE = "users.txt"
 #File to store failed attempts and lockout of users
 LOCKOUT_FILE = "lockouts.txt"
+#File to store tokens and expiration time
+SESSION_FILE = "sessions.txt"
 #Number of attempts before lockout
 MAX_ATTEMPTS = 3
 #Lockout time of 5 minutes
 LOCKOUT_DURATION_SECONDS = 300
+#Session of 1 hour
+SESSION_DURATION_SECONDS = 3600
 #List to store available roles of user
 valid_roles = ["user", "admin", "analyst"]
 
@@ -204,6 +209,65 @@ def manage_lockout_status(username, action):
 
     return (True, 0)
 
+#Function to generate unique token and save to a new file
+def create_session(username):
+    token = secrets.token_hex(16)
+    #Calculate expiry time by adding current time with 1 hour
+    expiry_time = time.time() + SESSION_DURATION_SECONDS
+
+    try:
+        #Store token and expiry time of user in file
+        with open(SESSION_FILE, "a") as f:
+            f.write(f"{token},{username},{expiry_time}\n")
+
+        #Inform user about his successfully created session
+        print(f"Session successfully created for user '{username}'. Token: {token[:8]}")
+        return token
+    
+    #Exception handling in case file could not be created
+    except Exception as e:
+        print(f"Error creating file: {e}")
+        return None
+
+#Function to check for an existing function and its expiration status
+def validate_session(token):
+    #Generate current time
+    current_time = time.time()
+    #Creation of empty list
+    valid_sessions = []
+    #Initialise variables to avoid errors in case no token for user exists
+    found_user = None
+    is_valid = False
+
+    #Exception handling in case file does not exist
+    try:
+        with open(SESSION_FILE, "r") as f:
+            #Iterating through each line in file
+            for line in f:
+                #Store token and expiry time of user in variables
+                tkn, user, expiry = line.strip().split(',')
+                #Convert expiry time to float data type
+                expiry = float(expiry)
+
+                #Check for expiration
+                if expiry > current_time:
+                    #Verify if token matches
+                    if tkn == token:
+                        #Return True and username
+                        is_valid = True
+                        found_user = user
+                    #Adding current line in file to list
+                    valid_sessions.append(line)
+
+        #Rewrite sessions file to remove any expired tokens
+        with open(SESSION_FILE, "w") as f:
+            f.writelines(valid_sessions)
+
+        #Return boolean value and username
+        return is_valid, found_user
+    except FileNotFoundError:
+        return False, None
+
 def display_menu():
     """Displays the main menu options."""
     print("\n" + "="*50)
@@ -285,6 +349,17 @@ def main():
                 print("\nYou are now logged in.")
                 print(f"Success: Welcome, {username}!")
                 print(f"Role: {role}")
+
+                #Create a session token
+                session_token = create_session(username)
+
+                #Verify if session token was created
+                if session_token:
+                    #Informs user about his session token
+                    print("\n--- Session Token Created ---")
+                    print(f"Your temporary session token is **{session_token}**")
+                    print("This token could be used for authenticated access.")
+                    print("-"*50)
 
                 # Optional: Ask if they want to logout or exit
                 input("\nPress Enter to return to main menu...")
