@@ -1,1 +1,2 @@
-alice,b'$2b$12$X6YZ6iXmea6iBX1PVJLx8umn4bDOlqWWAwuxkYN9mQvr.SE250UEC'
+alice,b'$2b$12$Z/QNWWu6lielcId0s8oK5.5j3FVdc329HEqb/Fq2pnC5HV0ex7sQe',analyst
+bob,b'$2b$12$KAewI6pklfAqlWvslET/c.Umldp0KBks/4mIwZuUimSEXPib0SwBC',user
