@@ -1,4 +1,19 @@
 import streamlit as st
+import sys
+import os
+
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(ROOT_DIR)
+
+#Import database connection function
+from app.data.db import connect_database
+
+#Import incident management functions
+from app.data.incidents import (
+    get_all_incidents,
+    insert_incident,
+    update_incident,
+    delete_incident)
 
 #Webpage title and icon
 st.set_page_config(page_title="Dashboard", page_icon="📊", layout="wide")
@@ -29,6 +44,17 @@ st.title("Dashboard")
 
 with st.sidebar:
     st.header("Filters")
+
+#Connect to intelligence database
+conn = connect_database("DATA/intelligence.db")
+
+#Fetch all incidents from database
+incidents = get_all_incidents()
+
+#Display incidents in a table
+st.dataframe(incidents, use_container_width=True)
+
+conn.commit()
 
 st.divider()
 
