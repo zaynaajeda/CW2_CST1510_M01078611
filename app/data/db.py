@@ -37,6 +37,24 @@ def load_csv_to_table(conn, csv_path, table_name):
     df = df.rename(columns = {
         "timestamp": "date",
         "category": "incident_type",
+        "incident_id": "id"
+    })
+
+  if table_name == "datasets_metadata":
+    df = df.rename(columns={
+      "dataset_id" : "id",
+      "name" : "dataset_name",
+      "rows" : "record_count",
+      "uploaded_by" : "source",
+      "upload_date" : "last_updated",
+      "columns" : "column_count",
+    })
+
+  if table_name == "it_tickets":
+    df = df.rename(columns={
+      "ticket_id" : "id",
+      "resolution_time_hours" : "resolved_date",
+      "created_at" : "created_date",
     })
 
   #Error handling
