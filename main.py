@@ -7,14 +7,20 @@ def main():
     print("Week 8: Database Demo")
     print("=" * 60)
     
+    DB_DIR = Path("DATA")
+
     # 1. Setup database
     conn = connect_database()
     create_all_tables(conn)
     #conn.close()
     
+    load_csv_to_table(conn, DB_DIR / "cyber_incidents.csv", "cyber_incidents")
+    load_csv_to_table(conn, DB_DIR / "datasets_metadata.csv", "datasets_metadata")
+    load_csv_to_table(conn, DB_DIR / "it_tickets.csv", "it_tickets")
+
     from app.services.user_service import register_user, login_user, migrate_users_from_file
     from app.data.incidents import insert_incident, get_all_incidents
-    DB_DIR = Path("DATA")
+    
     # 2. Migrate users
     migrate_users_from_file(conn, DB_DIR / "users.txt")
     
@@ -40,9 +46,7 @@ def main():
     df = get_all_incidents()
     print(f"Total incidents: {len(df)}")
 
-    load_csv_to_table(conn, DB_DIR / "cyber_incidents.csv", "cyber_incidents")
-    load_csv_to_table(conn, DB_DIR / "datasets_metadata.csv", "datasets_metadata")
-    load_csv_to_table(conn, DB_DIR / "it_tickets.csv", "it_tickets")
+
     conn.close()
 if __name__ == "__main__":
     main()
