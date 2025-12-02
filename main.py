@@ -46,7 +46,6 @@ def main():
     df = get_all_incidents()
     print(f"Total incidents: {len(df)}")
 
-
     conn.close()
 if __name__ == "__main__":
     main()

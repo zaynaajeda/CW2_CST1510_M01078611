@@ -103,7 +103,7 @@ def migrate_users_from_file(conn, filepath):
                 continue
 
             # Parse line: username,password_hash
-            parts = [p.strip().strip("b'") for p in line.split(',')]
+            parts = line.split(",", 2)
 
             if len(parts) != 3:
                 print(f"⚠️  Invalid line format: {line}")
@@ -112,8 +112,14 @@ def migrate_users_from_file(conn, filepath):
             if len(parts) == 3:
                 # Extract username, password_hash, and role
                 username = parts[0]
-                password_hash = parts[1]
+                raw_hash = parts[1]
                 role = parts[2]
+
+                if raw_hash.startswith("b'") and raw_hash.endswith("'"):
+                    password_hash = raw_hash[2:-1]
+                else:
+                    password_hash = raw_hash
+
 
                 # Insert user (ignore if already exists)
                 try:
