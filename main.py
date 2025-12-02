@@ -10,7 +10,7 @@ def main():
     # 1. Setup database
     conn = connect_database()
     create_all_tables(conn)
-    # conn.close()
+    #conn.close()
     
     from app.services.user_service import register_user, login_user, migrate_users_from_file
     from app.data.incidents import insert_incident, get_all_incidents
@@ -43,6 +43,6 @@ def main():
     load_csv_to_table(conn, DB_DIR / "cyber_incidents.csv", "cyber_incidents")
     load_csv_to_table(conn, DB_DIR / "datasets_metadata.csv", "datasets_metadata")
     load_csv_to_table(conn, DB_DIR / "it_tickets.csv", "it_tickets")
-
+    conn.close()
 if __name__ == "__main__":
     main()

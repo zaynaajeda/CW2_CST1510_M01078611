@@ -103,16 +103,23 @@ def migrate_users_from_file(conn, filepath):
                 continue
 
             # Parse line: username,password_hash
-            parts = line.split(',')
-            if len(parts) >= 2:
+            parts = [p.strip().strip("b'") for p in line.split(',')]
+
+            if len(parts) != 3:
+                print(f"⚠️  Invalid line format: {line}")
+                continue
+
+            if len(parts) == 3:
+                # Extract username, password_hash, and role
                 username = parts[0]
                 password_hash = parts[1]
+                role = parts[2]
 
                 # Insert user (ignore if already exists)
                 try:
                     cursor.execute(
                         "INSERT OR IGNORE INTO users (username, password_hash, role) VALUES (?, ?, ?)",
-                        (username, password_hash, 'user')
+                        (username, password_hash, role)
                     )
                     if cursor.rowcount > 0:
                         migrated_count += 1
