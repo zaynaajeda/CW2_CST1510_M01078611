@@ -1,4 +1,4 @@
-from app.data.db import connect_database
+from app.data.db import connect_database, load_csv_to_table
 from app.data.schema import create_all_tables
 from pathlib import Path
 
@@ -39,6 +39,10 @@ def main():
     # 5. Query data
     df = get_all_incidents()
     print(f"Total incidents: {len(df)}")
+
+    load_csv_to_table(conn, DB_DIR / "cyber_incidents.csv", "cyber_incidents")
+    load_csv_to_table(conn, DB_DIR / "datasets_metadata.csv", "datasets_metadata")
+    load_csv_to_table(conn, DB_DIR / "it_tickets.csv", "it_tickets")
 
 if __name__ == "__main__":
     main()

@@ -33,6 +33,12 @@ def load_csv_to_table(conn, csv_path, table_name):
   #Read CSV file using pandas
   df = pd.read_csv(csv_path)
 
+  if table_name == "cyber_incidents":
+    df = df.rename(columns = {
+        "timestamp": "date",
+        "category": "incident_type",
+    })
+
   #Error handling
   try:
     #Insert data into sql table
