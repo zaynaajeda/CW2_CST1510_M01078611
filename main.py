@@ -19,10 +19,10 @@ def main():
     migrate_users_from_file(conn, DB_DIR / "users.txt")
     
     # 3. Test authentication
-    success, msg = register_user("alice", "SecurePass123!", "analyst")
+    success, msg = register_user("anna", "SecurePass123!", "analyst")
     print(msg)
     
-    success, msg = login_user("alice", "SecurePass123!")
+    success, msg = login_user("anna", "SecurePass123!")
     print(msg)
     
     # 4. Test CRUD
