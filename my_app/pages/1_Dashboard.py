@@ -44,18 +44,31 @@ st.title("Dashboard")
 
 #Sidebar for domain selection
 with st.sidebar:
-    domain = st.selectbox("Choose Domain", ["Cyber Security", "Data Science", "IT Operations"], key="select_domain")
+    #Domain selection dropdown
+    domain = st.selectbox("Choose a Domain", ["-- Select a Domain --", "Cyber Security", "Data Science", "IT Operations"], key="select_domain")
 
-#Connect to intelligence database
-conn = connect_database("DATA/intelligence.db")
+#Verify if domain is selected
+if domain == "-- Select a Domain --":
+    #Display warning message
+    st.warning("Please select a domain from the sidebar to continue.")
+    #Stop whole execution of script
+    st.stop()
 
-#Fetch all incidents from database
-incidents = get_all_incidents()
+else:
+    if domain == "Cyber Security":
+        st.markdown("Welcome to **Cyber Security** Dashboard!")
 
-#Display incidents in a table
-st.dataframe(incidents, use_container_width=True)
 
-conn.commit()
+# #Connect to intelligence database
+# conn = connect_database("DATA/intelligence.db")
+
+# #Fetch all incidents from database
+# incidents = get_all_incidents()
+
+# #Display incidents in a table
+# st.dataframe(incidents, use_container_width=True)
+
+# conn.commit()
 
 st.divider()
 
