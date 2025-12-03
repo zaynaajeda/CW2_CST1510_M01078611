@@ -42,8 +42,9 @@ if not st.session_state.logged_in:
 # Dashboard content for logged-in users
 st.title("Dashboard")
 
+#Sidebar for domain selection
 with st.sidebar:
-    st.header("Filters")
+    domain = st.selectbox("Choose Domain", ["Cyber Security", "Data Science", "IT Operations"], key="select_domain")
 
 #Connect to intelligence database
 conn = connect_database("DATA/intelligence.db")
