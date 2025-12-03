@@ -1,4 +1,11 @@
 import streamlit as st
+import os
+import sys 
+
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(ROOT_DIR)
+
+from app.services.auth import hash_password, verify_password
 
 #Webpage title and icon
 st.set_page_config(page_title="Login/Register", page_icon="🔐", layout="centered")
