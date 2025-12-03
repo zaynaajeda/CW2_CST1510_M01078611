@@ -17,7 +17,8 @@ from app.data.incidents import (
     update_incident,
     delete_incident,
     get_incidents_by_type_count,
-    get_incidents_by_status)
+    get_incidents_by_status,
+    get_incidents_by_severity)
 
 #Webpage title and icon
 st.set_page_config(page_title="Dashboard", page_icon="📊", layout="wide")
@@ -136,6 +137,8 @@ else:
                 #Inform user that no data is available
                 st.info("No cyber incident data available.")
         
+        incidents_by_severity = get_incidents_by_severity(conn)
+
         st.markdown("##### Add New Incident")
 
         #Form to add new incident
