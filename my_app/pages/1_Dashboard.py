@@ -35,6 +35,7 @@ if not st.session_state.logged_in:
     if st.button("Go to Login/Register page"):
         #Use the official navigation API to switch pages
         st.switch_page("Home.py")
+        st.stop()
 
     #Stop further execution of the script
     st.stop()
@@ -47,6 +48,23 @@ with st.sidebar:
     #Domain selection dropdown
     domain = st.selectbox("Choose a Domain", ["-- Select a Domain --", "Cyber Security", "Data Science", "IT Operations"], key="select_domain")
 
+    #Line separator
+    st.divider()
+
+    if st.button("Log out"):
+        # Clear session state variables related to login
+        st.session_state.logged_in = False
+        st.session_state.username = ""
+
+        #Inform user of successful logout
+        st.info("Logged out successfully.")
+
+        # Redirect immediately to the login/register page
+        st.switch_page("Home.py")
+
+        #Stop further execution of the script
+        st.stop()
+
 #Verify if domain is selected
 if domain == "-- Select a Domain --":
     #Display warning message
@@ -55,6 +73,7 @@ if domain == "-- Select a Domain --":
     st.stop()
 
 else:
+    #Verify if domain is Cyber Security
     if domain == "Cyber Security":
         st.markdown("Welcome to **Cyber Security** Dashboard!")
 
@@ -69,21 +88,3 @@ else:
 # st.dataframe(incidents, use_container_width=True)
 
 # conn.commit()
-
-st.divider()
-
-if st.button("Log out"):
-    # Clear session state variables related to login
-    st.session_state.logged_in = False
-    st.session_state.username = ""
-
-    #Inform user of successful logout
-    st.info("Logged out successfully.")
-
-    #Button to go back to login/register page
-    if st.button("Go to Login/Register page"):
-        #Use the official navigation API to switch pages
-        st.switch_page("Home.py")
-
-    #Stop further execution of the script
-    st.stop()
