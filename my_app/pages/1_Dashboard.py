@@ -131,6 +131,13 @@ else:
                 #Inform user that no data is available
                 st.info("No cyber incident data available.")
 
+
+        st.markdown("##### Key Metrics")
+
+        #Total incidents
+        total_incidents = len(incidents)
+        st.metric("Total Incidents", total_incidents, border=True)
+        
         st.markdown("##### Add New Incident")
 
         #Form to add new incident
@@ -165,16 +172,5 @@ else:
                     st.success("New incident added successfully.")
                     #Rerun whole script
                     st.rerun()
-
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
-            st.metric("Threats Detected", 247, delta="+12")
-
-        with col2:
-            st.metric("Vulnerabilities", 8, delta="-3")
-
-        with col3:
-            st.metric("Incidents", 3, delta="+1")
 
     conn.commit()
