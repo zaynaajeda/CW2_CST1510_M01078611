@@ -30,6 +30,10 @@ if "username" not in st.session_state:
     #Initialise username
     st.session_state.username = ""
 
+#Ensure previous threats variable is initialised
+if "previous_threats" not in st.session_state:
+    st.session_state.previous_threats = None
+
 # Check if user is logged in
 if not st.session_state.logged_in:
     st.error("You must be logged in to view the dashboard.")
@@ -136,7 +140,11 @@ else:
 
         #Total incidents
         total_incidents = len(incidents)
-        st.metric("Total Incidents", total_incidents, border=True)
+
+        #Calculate change in threats
+        threat_delta = 0 if st.session_state.previous_threats is None else total_incidents - st.session_state.previous_threats
+
+        st.metric("Total Incidents", total_incidents,delta=f"{threat_delta:+d}" ,border=True)
         
         st.markdown("##### Add New Incident")
 
