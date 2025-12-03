@@ -97,35 +97,39 @@ else:
 
         st.markdown("#### Trends")
 
-        #Take number of incidents by type
-        incidents_by_type = get_incidents_by_type_count(conn)
-        
-        #Verify if function successfully returned data
-        if incidents_by_type.empty == False:
-            st.markdown("##### Incidents by Type")
+        col1, col2 = st.columns(2)
 
-            #Generate bar chart for incident types
-            incident_type_data = incidents_by_type.set_index("incident_type")
-            st.bar_chart(incident_type_data, use_container_width=True)
+        with col1:
+            #Take number of incidents by type
+            incidents_by_type = get_incidents_by_type_count(conn)
+            
+            #Verify if function successfully returned data
+            if incidents_by_type.empty == False:
+                st.markdown("##### Incidents by Type")
 
-        else:
-            #Inform user that no data is available
-            st.info("No cyber incident data available.")
+                #Generate bar chart for incident types
+                incident_type_data = incidents_by_type.set_index("incident_type")
+                st.bar_chart(incident_type_data, use_container_width=True)
 
-        #Take number of incidents by status
-        incidents_by_status = get_incidents_by_status(conn)
+            else:
+                #Inform user that no data is available
+                st.info("No cyber incident data available.")
 
-        #Verify if function successfully returned data
-        if incidents_by_status.empty == False:
-            st.markdown("##### Incidents by Status")
+        with col2:
+            #Take number of incidents by status
+            incidents_by_status = get_incidents_by_status(conn)
 
-            #Generate bar chart for incident status
-            incident_status_data = incidents_by_status.set_index("status")
-            st.bar_chart(incident_status_data, use_container_width=True)
-        
-        else:
-            #Inform user that no data is available
-            st.info("No cyber incident data available.")
+            #Verify if function successfully returned data
+            if incidents_by_status.empty == False:
+                st.markdown("##### Incidents by Status")
+
+                #Generate bar chart for incident status
+                incident_status_data = incidents_by_status.set_index("status")
+                st.bar_chart(incident_status_data, use_container_width=True)
+            
+            else:
+                #Inform user that no data is available
+                st.info("No cyber incident data available.")
 
         st.markdown("##### Add New Incident")
 
