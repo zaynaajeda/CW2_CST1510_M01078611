@@ -121,19 +121,29 @@ else:
             date = st.date_input("Date Reported")
             description = st.text_area("Description")
                 
+            #Submit button for the form
             submitted = st.form_submit_button("Add Incident")
 
+            #Verify if form is submitted
             if submitted:
-                insert_incident(
-                    date.strftime("%Y-%m-%d"),
-                    incident_type,
-                    severity,
-                    status,
-                    description,
-                    reported_by=st.session_state.username
-                )
-                st.success(f"New incident added successfully.")
-                st.rerun()
+                #Verify if all fields are filled
+                if not incident_type or not description or not date or not severity or not status:
+                    #Inform user to fill all fields
+                    st.warning("Please fill in all fields.")
+                else:
+                    #Insert new incident into database
+                    insert_incident(
+                        date.strftime("%Y-%m-%d"),  #Convert date into year-month-day format
+                        incident_type,
+                        severity,
+                        status,
+                        description,
+                        reported_by=st.session_state.username)
+                    
+                    #Success message
+                    st.success("New incident added successfully.")
+                    #Rerun whole script
+                    st.rerun()
 
         col1, col2, col3 = st.columns(3)
 
