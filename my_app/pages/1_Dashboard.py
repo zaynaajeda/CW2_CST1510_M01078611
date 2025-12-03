@@ -2,6 +2,7 @@ import streamlit as st
 import sys
 import os
 
+#Adjust path to main project directory
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(ROOT_DIR)
 
@@ -43,6 +44,8 @@ if not st.session_state.logged_in:
 # Dashboard content for logged-in users
 st.title("Dashboard")
 
+st.divider()
+
 #Sidebar for domain selection
 with st.sidebar:
     #Domain selection dropdown
@@ -73,18 +76,17 @@ if domain == "-- Select a Domain --":
     st.stop()
 
 else:
+    #Connect to intelligence database
+    conn = connect_database("DATA/intelligence.db")
+
     #Verify if domain is Cyber Security
     if domain == "Cyber Security":
-        st.markdown("Welcome to **Cyber Security** Dashboard!")
+        st.subheader("Cyber Security")
 
+        #Fetch all incidents from database
+        incidents = get_all_incidents()
 
-# #Connect to intelligence database
-# conn = connect_database("DATA/intelligence.db")
+        #Display incidents in a table
+        st.dataframe(incidents, use_container_width=True)
 
-# #Fetch all incidents from database
-# incidents = get_all_incidents()
-
-# #Display incidents in a table
-# st.dataframe(incidents, use_container_width=True)
-
-# conn.commit()
+        conn.commit()
