@@ -48,6 +48,9 @@ st.divider()
 
 #Sidebar for domain selection
 with st.sidebar:
+
+    st.subheader("Navigation")
+
     #Domain selection dropdown
     domain = st.selectbox("Choose a Domain", ["-- Select a Domain --", "Cyber Security", "Data Science", "IT Operations"], key="select_domain")
 
@@ -83,6 +86,7 @@ else:
     if domain == "Cyber Security":
         st.subheader("Cyber Security")
 
+        st.markdown("### Overview of Incidents")
         #Fetch all incidents from database
         incidents = get_all_incidents()
 
@@ -110,5 +114,21 @@ else:
                 )
                 st.success(f"New incident added successfully.")
                 st.rerun()
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.metric("Threats Detected", 247, delta="+12")
+
+        with col2:
+            st.metric("Vulnerabilities", 8, delta="-3")
+
+        with col3:
+            st.metric("Incidents", 3, delta="+1")
+
+        
+        threat_data = {"Malware": 89, "Phishing": 67, "DDoS": 45, "Intrusion": 46}
+
+        st.bar_chart(threat_data)
 
     conn.commit()
