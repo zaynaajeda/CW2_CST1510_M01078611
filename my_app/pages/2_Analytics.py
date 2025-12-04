@@ -36,16 +36,22 @@ if not st.session_state.logged_in:
 #Analytics content for logged-in users
 st.title("Analytics")
 
+#Retrieve domain from session state
 domain = st.session_state.selected_domain
 
+#Verify if user selected a domain
 if not domain:
+    #Error message for no domain selected
     st.error("Please select a domain on the sidebar of Dashboard before viewing analytics.")
 
+    #Button to navigate back to dashboard
     if st.button("Go to Dashboard"):
         st.switch_page("pages/1_Dashboard.py")
 
+    #Stop execution of the whole script
     st.stop()
 
+#Inform user about domain selected
 st.info(f"Selected domain: **{domain}**")
 
 #Verify if user is logged in
