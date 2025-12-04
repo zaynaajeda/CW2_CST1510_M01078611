@@ -21,6 +21,10 @@ if "username" not in st.session_state:
     #Initialise username
     st.session_state.username = ""
 
+if "role" not in st.session_state:
+    #Initialise role
+    st.session_state.role = ""
+
 # Check if user is logged in
 if not st.session_state.logged_in:
     st.error("You must be logged in to view the settings page.")
@@ -46,7 +50,10 @@ if st.session_state.logged_in:
         st.divider()
         logout_section()
 
-st.subheader("User Settings")
+st.markdown("#### Profile Information")
+st.write(f"**Username:** {st.session_state.username or 'Unknown'}")
+st.write(f"**Role:** {st.session_state.role or 'Unknown'}")
+
 
 st.markdown("##### Change Password")
 

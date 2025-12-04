@@ -12,6 +12,7 @@ def logout_section(redirect_page="Home.py"):
     if st.button("Log out"):
         st.session_state.logged_in = False
         st.session_state.username = ""
+        st.session_state.role = ""
         st.info("Logged out successfully.")
         st.switch_page(redirect_page)
         st.stop()

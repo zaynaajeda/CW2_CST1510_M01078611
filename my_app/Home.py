@@ -29,6 +29,10 @@ if "logged_in" not in st.session_state:
 if "username" not in st.session_state:
     st.session_state.username = ""
 
+#Initialise role
+if "role" not in st.session_state:
+    st.session_state.role = ""
+
 #Verify if user is logged in
 if st.session_state.logged_in:
     #Generate sidebar
@@ -77,6 +81,7 @@ with tab_login:
                 #Set session state 
                 st.session_state.logged_in = True
                 st.session_state.username = login_username
+                st.session_state.role = role_user
 
                 #Success message for login
                 st.success(f"Logged in as **{login_username}** ({role_user}).")
