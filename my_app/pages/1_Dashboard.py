@@ -59,13 +59,20 @@ if not st.session_state.logged_in:
 # Dashboard content for logged-in users
 st.title("Dashboard")
 
+#List to store values in domain
+domain_options = ["-- Select a Domain --", "Cyber Security", "Data Science", "IT Operations"]
+#Fetch any data from domain if previously selected
+stored_domain = st.session_state.get("selected_domain")
+#
+default_index = domain_options.index(stored_domain) if stored_domain in domain_options else 0
+
 #Sidebar for domain selection
 with st.sidebar:
 
     st.subheader("Navigation")
 
-    #Domain selection dropdown
-    domain = st.selectbox("Choose a Domain", ["-- Select a Domain --", "Cyber Security", "Data Science", "IT Operations"], key="select_domain",)
+    #Domain selection dropdown (pre-populated if user already picked one)
+    domain = st.selectbox("Choose a Domain", domain_options, index=default_index, key="select_domain")
 
     #Line separator
     st.divider()
