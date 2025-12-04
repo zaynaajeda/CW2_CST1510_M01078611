@@ -35,6 +35,10 @@ if "username" not in st.session_state:
     #Initialise username
     st.session_state.username = ""
 
+#Track the currently selected domain so other pages can reuse it
+if "selected_domain" not in st.session_state:
+    st.session_state.selected_domain = None
+
 #Ensure previous threats are initialised
 if "previous_threats" not in st.session_state:
     st.session_state.previous_threats = None
@@ -61,7 +65,7 @@ with st.sidebar:
     st.subheader("Navigation")
 
     #Domain selection dropdown
-    domain = st.selectbox("Choose a Domain", ["-- Select a Domain --", "Cyber Security", "Data Science", "IT Operations"], key="select_domain")
+    domain = st.selectbox("Choose a Domain", ["-- Select a Domain --", "Cyber Security", "Data Science", "IT Operations"], key="select_domain",)
 
     #Line separator
     st.divider()
@@ -72,10 +76,12 @@ with st.sidebar:
 if domain == "-- Select a Domain --":
     #Display warning message
     st.warning("Please select a domain from the sidebar to continue.")
+    st.session_state.selected_domain = None
     #Stop whole execution of script
     st.stop()
 
 else:
+    st.session_state.selected_domain = domain
     #Connect to the shared intelligence platform database
     conn = connect_database()
 

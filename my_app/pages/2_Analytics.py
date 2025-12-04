@@ -16,6 +16,10 @@ if "logged_in" not in st.session_state:
     #Initialise login status
     st.session_state.logged_in = False
 
+if "selected_domain" not in st.session_state:
+    #Track the domain chosen on the dashboard
+    st.session_state.selected_domain = None
+
 # Check if user is logged in
 if not st.session_state.logged_in:
     st.error("You must be logged in to view analytics.")
@@ -31,6 +35,18 @@ if not st.session_state.logged_in:
 
 #Analytics content for logged-in users
 st.title("Analytics")
+
+domain = st.session_state.selected_domain
+
+if not domain:
+    st.error("Please select a domain on the sidebar of Dashboard before viewing analytics.")
+
+    if st.button("Go to Dashboard"):
+        st.switch_page("pages/1_Dashboard.py")
+
+    st.stop()
+
+st.info(f"Selected domain: **{domain}**")
 
 #Verify if user is logged in
 if st.session_state.logged_in:
