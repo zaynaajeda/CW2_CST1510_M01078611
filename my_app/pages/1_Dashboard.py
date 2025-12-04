@@ -63,7 +63,7 @@ st.title("Dashboard")
 domain_options = ["-- Select a Domain --", "Cyber Security", "Data Science", "IT Operations"]
 #Fetch any data from domain if previously selected
 stored_domain = st.session_state.get("selected_domain")
-#
+#Derive selectbox default index so dropdown shows the stored domain
 default_index = domain_options.index(stored_domain) if stored_domain in domain_options else 0
 
 #Sidebar for domain selection
