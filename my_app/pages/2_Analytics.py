@@ -1,12 +1,25 @@
 import streamlit as st
 import sys
 import os
+import matplotlib.pyplot as plt
 
 #Adjust path to main project directory
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(ROOT_DIR)
 
 from my_app.components.sidebar import logout_section
+
+#Import database connection function
+from app.data.db import connect_database
+
+#Import incident management functions
+from app.data.incidents import (
+    get_incidents_by_status,
+    get_incidents_by_severity,
+    get_incidents_by_type_count)
+
+#Connect to the shared intelligence platform database
+conn = connect_database()
 
 #Webpage title and icon
 st.set_page_config(page_title="Analytics", page_icon="📈", layout="wide")
@@ -62,3 +75,61 @@ if st.session_state.logged_in:
         st.divider()
         #Implement logout
         logout_section()
+
+if domain == "Cyber Security":
+    col1, col2 = st.columns(2)
+
+    with col1:
+        #Take number of incidents by type
+        incidents_by_type = get_incidents_by_type_count(conn)
+            
+        #Verify if function successfully returned data
+        if incidents_by_type.empty == False:
+            st.markdown("##### Incidents by Type")
+
+            #Generate bar chart for incident types
+            incident_type_data = incidents_by_type.set_index("incident_type")
+            st.bar_chart(incident_type_data, use_container_width=True)
+
+        else:
+            #Inform user that no data is available
+            st.info("No cyber incident data available.")
+
+        #Take number of incidents by status
+        incidents_by_status = get_incidents_by_status(conn)
+
+        #Verify if function successfully returned data
+        if incidents_by_status.empty == False:
+            st.markdown("##### Incidents by Status")
+
+            #Generate bar chart for incident status
+            incident_status_data = incidents_by_status.set_index("status")
+            st.bar_chart(incident_status_data, use_container_width=True)
+            
+        else:
+            #Inform user that no data is available
+            st.info("No cyber incident data available.")
+
+    with col2:
+        #Take number of incidents by severity
+        incidents_by_severity = get_incidents_by_severity(conn)
+
+        #Verify if function successfully returned data
+        if incidents_by_severity.empty == False:
+            st.markdown("##### Incidents by Severity")
+
+            #Generate pie chart for incident severity
+            fig, ax = plt.subplots(figsize=(2.2, 2.2))
+            ax.pie(
+                    incidents_by_severity["count"],
+                    labels=incidents_by_severity["severity"],
+                    autopct="%1.0f%%",
+                    startangle=90,
+                    textprops={"fontsize": 5},
+                    )
+            ax.axis("equal")
+            st.pyplot(fig, use_container_width=False)
+
+        else:
+            #Inform user that no data is available
+            st.info("No cyber incident severity data available.")

@@ -2,7 +2,6 @@ import streamlit as st
 import sys
 import os
 import time
-import matplotlib.pyplot as plt
 
 #Adjust path to main project directory
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
