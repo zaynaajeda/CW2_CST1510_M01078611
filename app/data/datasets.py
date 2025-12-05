@@ -127,21 +127,6 @@ def get_large_datasets_by_source(conn):
     df = pd.read_sql_query(query, conn)
     return df
 
-def get_categories_with_many_datasets(conn, min_count=3):
-    """
-    Find categories with more than min_count datasets.
-    Uses: SELECT, FROM, GROUP BY, HAVING, ORDER BY
-    """
-    query = """
-    SELECT category, COUNT(*) as count
-    FROM datasets_metadata
-    GROUP BY category
-    HAVING COUNT(*) > ?
-    ORDER BY count DESC
-    """
-    df = pd.read_sql_query(query, conn, params=(min_count,))
-    return df
-
 # Test: Run analytical queries
 conn = connect_database()
 
@@ -152,9 +137,5 @@ print(df_by_category)
 print("\n Large Datasets by Source (>=10000 records):")
 df_large = get_large_datasets_by_source(conn)
 print(df_large)
-
-print("\n Categories with Many Datasets (>3):")
-df_many = get_categories_with_many_datasets(conn, min_count=3)
-print(df_many)
 
 conn.close()

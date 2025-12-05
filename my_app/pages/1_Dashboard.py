@@ -19,6 +19,13 @@ from app.data.incidents import (
     get_open_incidents,
     get_high_or_critical_incidents)
 
+from app.data.datasets import (
+    get_all_datasets,
+    insert_dataset,
+    update_dataset,
+    delete_dataset,
+    get_large_datasets_by_source)
+
 from my_app.components.sidebar import logout_section
 
 #Webpage title and icon
@@ -236,5 +243,34 @@ else:
             else:
                 #Error message
                 st.error("No incident found with that ID.")
-                       
+
+    #Verify if domain is Data Science
+    if domain == "Data Science":
+        st.subheader("Data Science")
+
+        st.divider()
+
+        st.markdown("##### Overview of Datasets")
+
+        #Fetch all datasets from database
+        datasets = get_all_datasets()
+        total_datasets = len(datasets)
+
+        large_datasets = get_large_datasets_by_source(conn)
+        total_large_datasets = len(large_datasets)
+
+        #Split webpage into columns
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            #Generate metric for total datasets
+            st.metric("Total datasets", total_datasets, border = True)
+
+        with col2:
+            st.metric("Larger than 10,000 records", total_large_datasets, border = True)
+
+        #Display datasets in a table
+        st.dataframe(datasets, use_container_width=True)
+        
+
     conn.commit()
