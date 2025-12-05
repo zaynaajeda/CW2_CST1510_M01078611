@@ -109,6 +109,17 @@ def get_incidents_by_type_count(conn):
     df = pd.read_sql_query(query, conn)
     return df
 
+def get_incidents_over_time(conn):
+    """Count incidents per reporting date ordered chronologically."""
+    query = """
+    SELECT date, COUNT(*) as count
+    FROM cyber_incidents
+    GROUP BY date
+    ORDER BY date ASC
+    """
+    df = pd.read_sql_query(query, conn)
+    return df
+
 def get_incidents_by_status(conn):
     """
     Count incidents by status.

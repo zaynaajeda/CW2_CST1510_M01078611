@@ -16,7 +16,8 @@ from app.data.db import connect_database
 from app.data.incidents import (
     get_incidents_by_status,
     get_incidents_by_severity,
-    get_incidents_by_type_count)
+    get_incidents_by_type_count,
+    get_incidents_over_time)
 
 #Connect to the shared intelligence platform database
 conn = connect_database()
@@ -77,6 +78,7 @@ if st.session_state.logged_in:
         logout_section()
 
 if domain == "Cyber Security":
+    incidents_over_time = get_incidents_over_time(conn)
     col1, col2 = st.columns(2)
 
     with col1:
@@ -133,3 +135,16 @@ if domain == "Cyber Security":
         else:
             #Inform user that no data is available
             st.info("No cyber incident severity data available.")
+
+    #Display time-series for cyberincidents
+    if incidents_over_time.empty == False:
+        st.markdown("##### Incidents Over Time")
+
+        #Create line chart for number of incidents over time
+        st.line_chart(
+            incidents_over_time,
+            x="date",
+            y="count",
+            use_container_width=True)
+    else:
+        st.info("No time-series data of incidents available.")
