@@ -22,7 +22,8 @@ from app.data.incidents import (
 #Import dataset management functions
 from app.data.datasets import (
     get_datasets_by_category,
-    get_datasets_by_source)
+    get_datasets_by_source,
+    get_datasets_over_time)
 
 #Connect to the shared intelligence platform database
 conn = connect_database()
@@ -191,4 +192,15 @@ if domain == "Data Science":
         ax.axis("equal")
         st.pyplot(fig, use_container_width = False)        
 
+    #Take number of datasets per day
+    datasets_over_time = get_datasets_over_time(conn)
 
+    #Display time-series for datasets
+    if datasets_over_time.empty == False:
+        st.markdown("##### Datasets over Time")
+
+        #Create line chart for number of datasets over time
+        st.line_chart(datasets_over_time, x = "last_updated", y = "count")
+    else:
+        #Inform user that no data is available to plot
+        st.info("No time-series data of datasets available.")

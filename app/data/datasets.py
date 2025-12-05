@@ -171,6 +171,19 @@ def get_large_columns_datasets(conn):
     #Return dataframe
     return df
 
+def get_datasets_over_time(conn):
+    """Count datasets per date"""
+    query = """
+    SELECT last_updated, COUNT(*) as count
+    FROM datasets_metadata
+    GROUP BY last_updated
+    ORDER BY last_updated ASC
+    """
+        #Create dataframe
+    df = pd.read_sql_query(query, conn)
+    #Return dataframe
+    return df
+
 # Test: Run analytical queries
 conn = connect_database()
 
