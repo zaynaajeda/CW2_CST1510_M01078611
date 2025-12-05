@@ -2,6 +2,7 @@ import streamlit as st
 import sys
 import os
 import time
+from datetime import timedelta
 
 #Adjust path to main project directory
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -459,8 +460,111 @@ else:
             #Prompt user to enter ticket details
             ticket_subject = st.text_input("Ticket Subject")
             ticket_category = st.text_input("Category")
+            assigned_to = st.text_input("Assigned To")
             ticket_priority = st.selectbox("Priority", ["Low", "Medium", "High", "Critical"])
             ticket_status = st.selectbox("Status", ["Open", "In Progress", "Waiting for User", "Resolved", "Closed"])
+            ticket_created_date = st.date_input("Created Date")
+            resolved_days = st.number_input("Days required to resolve", min_value=1, step=1)
+            ticket_description = st.text_area("Description")
 
+            #Submit button for form
+            submit_ticket = st.form_submit_button("Add Ticket")
+
+        #Verify if form is submitted
+        if submit_ticket:
+            #Verify is user has entered all fields
+            if not ticket_subject or not ticket_category or not ticket_description or not assigned_to:
+                #Inform user to fill all fields
+                st.warning("Please fill in all fields.")
+            else:
+                #Convert resolved days into string
+                resolved_days = str(resolved_days)
+
+                #Insert new ticket into database
+                insert_ticket(
+                    ticket_priority,
+                    ticket_status,
+                    ticket_category,
+                    ticket_subject,
+                    ticket_description,
+                    ticket_created_date.strftime("%Y-%m-%d"),
+                    resolved_days,
+                    assigned_to)
+                
+                #Success message
+                st.success("New ticket added successfully.")
+
+                #Pause program for 1s
+                time.sleep(1)
+                #Rerun whole program
+                st.rerun()
+
+
+        st.markdown("##### Delete Ticket")
+
+        #Form to delete ticket
+        with st.form("delete_ticket"):
+            #Prompt user to select ticket ID
+            ticket_id_delete = st.number_input("Ticket ID", min_value = min_ticket_id, max_value = max_ticket_id)
+
+            #Checkbox to confirm deletion of ticket
+            confirm_delete_ticket = st.checkbox("Yes, delete ticket.")
+            #Button for form
+            submit_delete_ticket = st.form_submit_button("Delete Ticket")
+
+        #Verify if form is submitted
+        if submit_delete_ticket:
+            #Verify if checkbox is ticked
+            if not confirm_delete_ticket:
+                #Inform user to tick checkbox
+                st.warning("Please confirm deletion before proceeding.")
+            else:
+                #Proceed with deletion of ticket
+                if delete_ticket(int(ticket_id_delete)):
+                    #Inform user that ticket was deleted
+                    st.success(f"Ticket of ID {ticket_id_delete} deleted.")
+
+                    #Pause program for 1s
+                    time.sleep(1)
+                    #Rerun whole script
+                    st.rerun()
+                else:
+                    #Error message
+                    st.error("No ticket found with that ID")
+
+
+        st.markdown("##### Update Ticket")
+
+        #Form to update ticket
+        with st.form("update_ticket"):
+            #Prompt user to select ticket ID
+            ticket_id_update = st.number_input("Incident ID", min_value = min_ticket_id, max_value = max_ticket_id)
+            
+            #Prompt user to select new status of ticket
+            new_ticket_status = st.selectbox("New Status", ["-- Select New Status --", "Open", "In Progress", "Waiting for User", "Resolved", "Closed"], key="update_status")
+            #Button to submit form
+            submit_ticket_update = st.form_submit_button("Update Ticket")
+
+        #Verify if form is submitted
+        if submit_ticket_update:
+            #Verify if new status is selected
+            if new_ticket_status == "-- Select New Status --":
+                #Warning message
+                st.warning("Please select new status of ticket.")
+                #Stop whole execution of script
+                st.stop()
+
+            #Proceed with updating ticket status
+            if update_ticket(conn, int(ticket_id_update), new_ticket_status):
+                #Success message
+                st.success(f"Ticket of ID {ticket_id_update} updated to {new_ticket_status}.")
+
+                #Pause program for 1s
+                time.sleep(1.2)
+                #Rerun whole script
+                st.rerun()
+            else:
+                #Error message
+                st.error("No ticket found with that ID.")
 
     conn.commit()
