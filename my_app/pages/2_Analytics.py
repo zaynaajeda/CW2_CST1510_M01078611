@@ -23,7 +23,9 @@ from app.data.incidents import (
 from app.data.datasets import (
     get_datasets_by_category,
     get_datasets_by_source,
-    get_datasets_over_time)
+    get_datasets_over_time,
+    get_dataset_record_counts,
+    get_dataset_column_counts)
 
 #Connect to the shared intelligence platform database
 conn = connect_database()
@@ -159,24 +161,18 @@ if domain == "Data Science":
     if datasets_by_category.empty == False:
         st.markdown("##### Datasets by Category")
 
-        #Generate bar chart for dataset categories
-        st.bar_chart(datasets_by_category, x = "category", y = "count")
-    else:
-        #Inform user that no data is available
-        st.info("No datasets available.")
+        #Generate pie chart for dataset categories
+        fig, ax = plt.subplots(figsize = (2.2, 2.2))
+        ax.pie(datasets_by_category["count"],
+                labels = datasets_by_category["category"],
+                autopct = "%1.0f%%",
+                startangle = 90,
+                textprops = {"fontsize": 5})        
+        ax.axis("equal")
+        st.pyplot(fig, use_container_width = False)
 
     #Take datasets by source
     datasets_by_source = get_datasets_by_source(conn)
-
-    #Verify if function successfully returned data
-    if datasets_by_source.empty == False:
-        st.markdown("##### Datasets by Source")
-
-        #Generate bar chart for dataset sources
-        st.bar_chart(datasets_by_source, x = "source", y = "count")
-    else:
-        #Inform user that no data is available
-        st.info("No dataset source information available.")
 
     #Verify if function successfully returned data
     if datasets_by_source.empty == False:
@@ -204,3 +200,27 @@ if domain == "Data Science":
     else:
         #Inform user that no data is available to plot
         st.info("No time-series data of datasets available.")
+
+    #Display record counts per dataset
+    dataset_record_counts = get_dataset_record_counts(conn)
+
+    if dataset_record_counts.empty == False:
+        st.markdown("##### Record Count per Dataset")
+
+        #Generate bar chart for dataset record sizes
+        st.bar_chart(dataset_record_counts, x = "dataset_name", y = "record_count")
+    else:
+        #Inform user that no dataset-level metrics are available
+        st.info("No dataset record count information available.")
+
+    #Display column counts per dataset
+    dataset_column_counts = get_dataset_column_counts(conn)
+
+    if dataset_column_counts.empty == False:
+        st.markdown("##### Column Count per Dataset")
+
+        #Generate bar chart for dataset column sizes
+        st.bar_chart(dataset_column_counts, x = "dataset_name", y = "column_count")
+    else:
+        #Inform user that no dataset-level metrics are available
+        st.info("No dataset column count information available.")

@@ -179,9 +179,35 @@ def get_datasets_over_time(conn):
     GROUP BY last_updated
     ORDER BY last_updated ASC
     """
-        #Create dataframe
+    #Create dataframe
     df = pd.read_sql_query(query, conn)
     #Return dataframe
+    return df
+
+def get_dataset_record_counts(conn):
+    """
+    Retrieve dataset names with their record counts ordered by size.
+    Uses: SELECT, FROM, ORDER BY
+    """
+    query = """
+    SELECT dataset_name, record_count
+    FROM datasets_metadata
+    ORDER BY record_count DESC
+    """
+    df = pd.read_sql_query(query, conn)
+    return df
+
+def get_dataset_column_counts(conn):
+    """
+    Retrieve dataset names with their column counts ordered by size.
+    Uses: SELECT, FROM, ORDER BY
+    """
+    query = """
+    SELECT dataset_name, column_count
+    FROM datasets_metadata
+    ORDER BY column_count DESC
+    """
+    df = pd.read_sql_query(query, conn)
     return df
 
 # Test: Run analytical queries
@@ -194,6 +220,14 @@ print(df_by_category)
 print("\n Datasets by Source:")
 df_by_source = get_datasets_by_source(conn)
 print(df_by_source)
+
+print("\n Dataset Record Counts:")
+df_record_counts = get_dataset_record_counts(conn)
+print(df_record_counts)
+
+print("\n Dataset Column Counts:")
+df_column_counts = get_dataset_column_counts(conn)
+print(df_column_counts)
 
 print("\n Large Datasets by Source (>=10000 records):")
 df_large = get_large_datasets_by_source(conn)
