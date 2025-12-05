@@ -33,7 +33,9 @@ from app.data.tickets import (
     get_all_tickets,
     insert_ticket,
     delete_ticket,
-    update_ticket)
+    update_ticket,
+    get_open_tickets,
+    get_high_or_critical_tickets)
 
 from my_app.components.sidebar import logout_section
 
@@ -137,7 +139,7 @@ else:
 
         with col1:
             #Generate metric for total incidents
-            st.metric("Total incidents", total_incidents, border = True)
+            st.metric("Total Incidents", total_incidents, border = True)
 
         with col2:
             #Generate metric for open incidents
@@ -421,14 +423,44 @@ else:
         #Get minimum ticket id from tickets table
         min_ticket_id = int(tickets["id"].min())
 
+        #Fetch open tickets count
+        open_tickets = get_open_tickets(conn)
+        total_open_tickets = len(open_tickets)
+
+        #Fetch high or critical priority tickets count
+        high_critical_tickets = get_high_or_critical_tickets(conn)
+        total_high_critical_tickets = len(high_critical_tickets)
+
         #Split page into columns
         col1, col2, col3 = st.columns(3)
 
         with col1:
+            #Generate metric for total tickets
             st.metric("Total Tickets", total_tickets, border = True)
 
+        with col2:
+            #Generate metric for open tickets
+            st.metric("Open Tickets", total_open_tickets, border = True)
+
+        with col3:
+            #Generate high or critical tickets
+            st.metric("High/Critical Tickets", total_high_critical_tickets, border = True)
+
         #Display tickets in a table
-        st.dataframe(tickets, use_container_width = True)        
+        st.dataframe(tickets, use_container_width = True)    
+
+        st.divider()
+        st.markdown("#### Tickets Management")
+
+        st.markdown("##### Add New Ticket")
+
+        #Form to add new ticket
+        with st.form("new_ticket"):
+            #Prompt user to enter ticket details
+            ticket_subject = st.text_input("Ticket Subject")
+            ticket_category = st.text_input("Category")
+            ticket_priority = st.selectbox("Priority", ["Low", "Medium", "High", "Critical"])
+            ticket_status = st.selectbox("Status", ["Open", "In Progress", "Waiting for User", "Resolved", "Closed"])
 
 
     conn.commit()

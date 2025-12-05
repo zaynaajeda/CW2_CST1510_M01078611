@@ -146,6 +146,34 @@ def get_categories_with_many_tickets(conn, min_count=5):
     df = pd.read_sql_query(query, conn, params=(min_count,))
     return df
 
+def get_open_tickets(conn):
+    """
+    Retrieve all tickets that are currently open.
+    Uses: SELECT, FROM, WHERE, ORDER BY
+    """
+    query = """
+    SELECT *
+    FROM it_tickets
+    WHERE LOWER(status) = 'open'
+    ORDER BY created_date DESC
+    """
+    df = pd.read_sql_query(query, conn)
+    return df
+
+def get_high_or_critical_tickets(conn):
+    """
+    Retrieve tickets with High or Critical priority.
+    Uses: SELECT, FROM, WHERE, ORDER BY
+    """
+    query = """
+    SELECT *
+    FROM it_tickets
+    WHERE LOWER(priority) IN ('high', 'critical')
+    ORDER BY created_date DESC
+    """
+    df = pd.read_sql_query(query, conn)
+    return df
+
 # Test: Run analytical queries
 conn = connect_database()
 
@@ -160,5 +188,13 @@ print(df_high_priority)
 print("\n Categories with Many Tickets (>5):")
 df_many_tickets = get_categories_with_many_tickets(conn, min_count=5)
 print(df_many_tickets)
+
+print("\n Open Tickets:")
+df_open_tickets = get_open_tickets(conn)
+print(df_open_tickets)
+
+print("\n High or Critical Tickets:")
+df_high_critical_tickets = get_high_or_critical_tickets(conn)
+print(df_high_critical_tickets)
 
 conn.close()
