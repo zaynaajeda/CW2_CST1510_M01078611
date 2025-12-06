@@ -10,6 +10,7 @@ _pychache_/
 # Environment variables
 .env
 .env.local
+.streamlit/secrets.toml
 
 # IDE settings
 .vscode/
