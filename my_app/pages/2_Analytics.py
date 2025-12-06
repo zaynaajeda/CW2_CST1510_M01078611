@@ -82,6 +82,7 @@ if not domain:
 
 #Inform user about domain selected
 st.info(f"Selected domain: **{domain}**")
+st.divider()
 
 #Verify if user is logged in
 if st.session_state.logged_in:
