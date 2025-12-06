@@ -60,4 +60,25 @@ def get_ai_prompt(domain, problem):
                 -Status: {problem['status']}
                 -Description: {problem['description']}
             """
+    elif domain == "Data Science":
+        prompt = f"""
+                You are a senior data science assistant.
+
+                Review the following dataset metadata and provide
+                -Analyse the dataset
+                -Primary business problems or analyses this dataset can support
+                -Recommended data quality checks or integrity issues to watch
+                -Feature engineering or transformation ideas
+                -Appropriate modelling or visualisation approaches
+                -Operational considerations (refresh cadence, owners, monitoring)
+
+                Dataset details:
+                -Name: {problem['dataset_name']}
+                -Category: {problem['category']}
+                -Source: {problem['source']}
+                -Last Updated: {problem['last_updated']}
+                -Record Count: {problem['record_count']}
+                -Column Count: {problem['column_count']}
+                -File Size (MB): {problem['file_size_mb']}
+            """
     return prompt

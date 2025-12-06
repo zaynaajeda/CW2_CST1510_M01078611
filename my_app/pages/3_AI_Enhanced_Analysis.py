@@ -3,8 +3,14 @@ from openai import OpenAI
 import sys
 import os
 
-#Import incident management function
+#Import all incidents from database
 from app.data.incidents import get_all_incidents  
+
+#Import all datasets from database
+from app.data.datasets import get_all_datasets
+
+#Import all tickets from database
+from app.data.tickets import get_all_tickets
 
 #Import database connection function
 from app.data.db import connect_database
@@ -13,7 +19,7 @@ from app.data.db import connect_database
 from my_app.components.sidebar import logout_section
 
 #Import system prompt generation for a specific domain
-from my_app.components.ai_functions import get_ai_prompt
+from my_app.components.ai_functions import get_ai_prompt, get_system_prompt
 
 #Adjust path to main project directory
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -77,9 +83,13 @@ if not domain:
 st.info(f"Selected domain: **{domain}**")
 st.divider()
 
+#Generate system prompt for selected domain
+system_prompt = get_system_prompt(domain)
+
 #Connect to database
 conn = connect_database()
 
+#Verify if domain is cyber security
 if domain == "Cyber Security":
     #Fetch incidents from database
     incidents = get_all_incidents()
@@ -92,12 +102,12 @@ if domain == "Cyber Security":
 
         #Make each incident into a format (ID: type - severity)
         incident_options = [
-            f"{inc['id']} : {inc['incident_type']} - {inc['severity']}" 
+            f"{inc['id']} : {inc['incident_type']} - {inc['severity']} - {inc['status']}" 
             for inc in incident_records]
 
         #Allow user to select incident by showing its ID, type and severity
         selected_idx = st.selectbox(
-            "Select incident to analyse:",
+            "Select incident to analyse (ID : type - severity - status):",
             options=range(len(incident_records)),
             format_func=lambda i: incident_options[i],
         )
@@ -117,7 +127,7 @@ if domain == "Cyber Security":
         st.divider()
 
         #Button to enable AI analysis
-        if st.button("Allow AI Analysis"):
+        if st.button("Allow AI Analysis", key="cyber-ai-analysis"):
 
             st.divider()
 
@@ -128,7 +138,7 @@ if domain == "Cyber Security":
             response = client.chat.completions.create(
                 model = "gpt-4o",
                 messages = [
-                    {"role":"system", "content":"You help cybersecurity teams analyse cyber incidents."},
+                    {"role":"system", "content":system_prompt},
                     {"role":"user", "content":prompt}]
                 )
             
@@ -138,3 +148,69 @@ if domain == "Cyber Security":
             #Display AI analysis
             st.markdown("#### AI-Enhanced Analysis")
             st.write(ai_response)
+
+#Verify if domain is data science
+if domain == "Data Science":
+    #Fetch datasets from database
+    datasets = get_all_datasets()
+
+    #Verify if function returned data
+    if datasets.empty == False:
+        #Convert dataframe to dictionaries
+        dataset_records = datasets.to_dict(orient="records")
+
+        #Format dataset options for dropdown
+        dataset_options = [
+            f"{ds['id']} : {ds['dataset_name']} - {ds['category']} - {ds['record_count']} rows - {ds['column_count']} coulmns"
+            for ds in dataset_records
+        ]
+
+        #Allow user to select dataset
+        selected_idx = st.selectbox(
+            "Select dataset to analyse (ID : name - category - rows - columns):",
+            options=range(len(dataset_records)),
+            format_func=lambda i: dataset_options[i],
+        )
+
+        #Get dataset selected from dropdown
+        dataset = dataset_records[selected_idx]
+
+        #Display dataset details
+        st.markdown("#### Overview of Dataset Details")
+        st.write(f"**ID:** {dataset['id']}")
+        st.write(f"**Name:** {dataset['dataset_name']}")
+        st.write(f"**Category:** {dataset['category']}")
+        st.write(f"**Source:** {dataset['source']}")
+        st.write(f"**Record Count:** {dataset['record_count']}")
+        st.write(f"**Column Count:** {dataset['column_count']}")
+        st.write(f"**File Size (MB):** {dataset['file_size_mb']}")
+        st.write(f"**Last Updated:** {dataset['last_updated']}")
+
+        st.divider()
+
+        #Button to enable AI analysis
+        if st.button("Allow AI Analysis", key="data-science-ai-analysis"):
+
+            st.divider()
+
+            #Get message prompt about dataset details for AI analysis
+            prompt = get_ai_prompt(domain, dataset)
+
+            #Send request to OpenAI
+            response = client.chat.completions.create(
+                model = "gpt-4o",
+                messages = [
+                    {"role":"system", "content":system_prompt},
+                    {"role":"user", "content":prompt}]
+                )
+
+            #Retrieve AI output
+            ai_response = response.choices[0].message.content
+
+            #Display AI analysis
+            st.markdown("#### AI-Enhanced Analysis")
+            st.write(ai_response)
+
+    else:
+        #Inform user that no datasets are available
+        st.info("No datasets available for analysis.")
