@@ -12,7 +12,8 @@ from app.data.db import connect_database
 #Import logout function
 from my_app.components.sidebar import logout_section
 
-
+#Import system prompt generation for a specific domain
+from my_app.components.ai_functions import get_ai_prompt
 
 #Adjust path to main project directory
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -76,34 +77,64 @@ if not domain:
 st.info(f"Selected domain: **{domain}**")
 st.divider()
 
-#Fetch incidents from database
+#Connect to database
 conn = connect_database()
-incidents = get_all_incidents()
 
-#Verify if function returned data
-if incidents.empty == False:
-    #Convert dataframe to dictionaries
-    #Each inc becomes a dictionary
-    incident_records = incidents.to_dict(orient="records")
+if domain == "Cyber Security":
+    #Fetch incidents from database
+    incidents = get_all_incidents()
 
-    #Make each incident into a format (ID: type - severity)
-    incident_options = [
-        f"{inc['id']}: {inc['incident_type']} - {inc['severity']}" 
-        for inc in incident_records]
+    #Verify if function returned data
+    if incidents.empty == False:
+        #Convert dataframe to dictionaries
+        #Each inc becomes a dictionary
+        incident_records = incidents.to_dict(orient="records")
 
-    #Allow user to select incident by showing its ID, type and severity
-    selected_idx = st.selectbox(
-        "Select incident to analyse:",
-        options=range(len(incident_records)),
-        format_func=lambda i: incident_options[i],
-    )
+        #Make each incident into a format (ID: type - severity)
+        incident_options = [
+            f"{inc['id']} : {inc['incident_type']} - {inc['severity']}" 
+            for inc in incident_records]
 
-    #Get incident selected from dropdown
-    incident = incident_records[selected_idx]
+        #Allow user to select incident by showing its ID, type and severity
+        selected_idx = st.selectbox(
+            "Select incident to analyse:",
+            options=range(len(incident_records)),
+            format_func=lambda i: incident_options[i],
+        )
 
-    # Display incident details
-    st.subheader("Incident Details")
-    st.write("**Type:**", incident["incident_type"])
-    st.write("**Severity:**", incident["severity"])
-    st.write("**Description:**", incident["description"])
-    st.write("**Status:**", incident["status"])
+        #Get incident selected from dropdown
+        incident = incident_records[selected_idx]
+
+        
+        # Display incident details
+        st.markdown("#### Overview of Incident Details")
+        st.write(f"**ID:** {incident['id']}")
+        st.write(f"**Type:** {incident['incident_type']}")
+        st.write(f"**Status:** {incident['status']}")
+        st.write(f"**Severity:** {incident['severity']}")
+        st.write(f"**Description:** {incident['description']}")
+
+        st.divider()
+
+        #Button to enable AI analysis
+        if st.button("Allow AI Analysis"):
+
+            st.divider()
+
+            #Get message prompt about incident details for AI analysis
+            prompt = get_ai_prompt(domain, incident)
+
+            #Send request to OpenAI
+            response = client.chat.completions.create(
+                model = "gpt-4o",
+                messages = [
+                    {"role":"system", "content":"You help cybersecurity teams analyse cyber incidents."},
+                    {"role":"user", "content":prompt}]
+                )
+            
+            #Retrieve AI output
+            ai_response = response.choices[0].message.content
+
+            #Display AI analysis
+            st.markdown("#### AI-Enhanced Analysis")
+            st.write(ai_response)
