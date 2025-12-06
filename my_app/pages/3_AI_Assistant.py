@@ -42,28 +42,6 @@ if "messages" not in st.session_state:
         {"role":"system", "content":"You are a helpful assistant."}
     ]
 
-with st.sidebar:
-    st.header("AI Chat Controls")
-
-
-    # Show message count
-    message_count = len(st.session_state.get("messages", [])) - 1
-    st.metric("Messages", message_count)
-
-    # Clear chat button
-    if st.button("Clear AI Chat", use_container_width=True):
-
-        # Reset messages to initial state
-        st.session_state.messages = [
-            {"role": "system", "content": "You are a helpful assistant."}
-        ]
-
-        # Rerun to refresh the interface
-        st.rerun()  
-
-    st.divider()  
-    logout_section()
-
 #Iterate through messages
 for message in st.session_state.messages:
     #Skip system messages
@@ -116,3 +94,28 @@ if user_input:
         st.session_state.messages.append(
             {"role":"assistant", "content":full_response}
         )
+
+#Count messages
+message_count = len(st.session_state.get("messages", [])) - 1
+
+#Create sidebar after processing input to use latest counts
+with st.sidebar:
+    st.header("AI Chat Controls")
+
+    #Show message count
+    st.metric("Messages", message_count)
+
+    #Clear chat button
+    if st.button("Clear AI Chat", use_container_width=True):
+
+        #Reset messages to initial state
+        st.session_state.messages = [
+            {"role": "system", "content": "You are a helpful assistant."}
+        ]
+
+        #Rerun to refresh the interface
+        st.rerun()  
+
+    #Add divider and logout section
+    st.divider()  
+    logout_section()
